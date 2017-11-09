@@ -110,7 +110,8 @@ def perspect_transform(img, src, dst):
 
 # Apply the above functions in succession and update the Rover state accordingly
 def perception_step(Rover):
-    img = Rover.img
+
+    image = Rover.img
 
     xpos = Rover.pos[0]
     ypos = Rover.pos[1]
@@ -127,7 +128,7 @@ def perception_step(Rover):
 
 
     # 2) Apply perspective transform
-    warped = perspect_transform(img, source, destination)
+    warped = perspect_transform(image, source, destination)
     # 3) Apply color threshold to identify navigable terrain/obstacles/rock samples
     navigable = color_thresh_nav(warped) #bin image of eagle eye
     rock = color_thresh_rock(warped)
@@ -149,19 +150,19 @@ def perception_step(Rover):
     obs_world_x, obs_world_y = pix_to_world(obs_rover_x, obs_rover_y, xpos, ypos, yaw, 200, 10)
 
     Rover.worldmap[obs_world_y, obs_world_x, 0] += 1
-    Rover.worldmap[rock_world_y, rock_world_x, :] += 255
+    Rover.worldmap[rock_world_y, rock_world_x, :] = 255
     Rover.worldmap[nav_world_y, nav_world_x, 2] += 10
 
 
-    dist, Rover.nav_angles = to_polar_coords(xpix, ypix)
+    dist, angle = to_polar_coords(nav_world_x, nav_world_y)
 
 
     # 7) Update Rover worldmap (to be displayed on right side of screen)
 
     # 8) Convert rover-centric pixel positions to polar coordinates
     # Update Rover pixel distances and angles
-        # Rover.nav_dists = rover_centric_pixel_distances
-        # Rover.nav_angles = rover_centric_angles
+    Rover.nav_dists = dist
+    Rover.nav_angles = angle
 
 
 
